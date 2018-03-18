@@ -2,8 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent (typeof(PlayerController))]
 public class Player : MonoBehaviour {
 
+    //variables for player movement
+    Vector3 velocity;
+    float moveSpeed = .1f;
+
+    //variables for buttom
     public Transform inputButtom;
     public Transform TouchInput;
     public Transform maxValue;
@@ -14,15 +20,22 @@ public class Player : MonoBehaviour {
     bool firstTouch = true;
     Vector3 inputLastPossition;
 
+    PlayerController controller;
 	void Start () {
         //setting the first possition to reset the TouchInput object position
-        inputLastPossition = TouchInput.position;
+        inputLastPossition = TouchInput.localPosition;
+        //getting reference to the PlayerController
+        controller = GetComponent<PlayerController>(); 
 
     }
 
     void Update () {
+        //getting the player input
         Vector2 input = InputController();
-        print(input);
+        Debug.Log("player input values = " + input);
+        velocity.x = input.x * moveSpeed;
+        velocity.y = input.y * moveSpeed;
+        controller.Move(velocity);
 
 
 	}
@@ -44,7 +57,7 @@ public class Player : MonoBehaviour {
                 //checkin if is the first touch on the screen to reposition the TouchInputObject
                 if (firstTouch)
                 {
-                    inputLastPossition = TouchInput.position;
+                    //inputLastPossition = TouchInput.position;
                     TouchInput.position = new Vector3(point.x, point.y, TouchInput.position.z);
                     firstTouch = false;
                 }
@@ -59,7 +72,7 @@ public class Player : MonoBehaviour {
         {
             //reseting all possitions if not touching
             inputButtom.localPosition = new Vector3(0, 0, 0);
-            TouchInput.position = inputLastPossition;
+            TouchInput.localPosition = inputLastPossition;
             firstTouch = true;
 
         }
